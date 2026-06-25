@@ -17,6 +17,7 @@
     "nodemailer": "^8.0.4",
     "razorpay": "^2.9.6",
     "resend": "^3.0.0",
+    "sql.js": "^1.14.1",
     "sqlite3": "^6.0.1"
   },
   "keywords": [],

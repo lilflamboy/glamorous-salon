@@ -389,36 +389,44 @@ app.get('*', (req, res) => {
     }
 });
 
-// har 1 min me expired OTP cleanup
-cron.schedule("* * * * *", () => {
-    const now = Date.now();
-    if (typeof db !== 'undefined' && db) {
-        db.query("DELETE FROM otp_verification WHERE expiry < ?", [now])
-            .then((result) => {
-                if (result[0].affectedRows > 0) {
-                    console.log(`Removed ${result[0].affectedRows} expired OTPs from database`);
-                }
-            })
-            .catch(err => console.error("Cron OTP DB cleanup error:", err.message));
-    }
-});
-
-function startServer(port) {
-    const server = app.listen(port, HOST, () => {
-        console.log(`\n🔥 Server running on http://localhost:${port}\n`);
-    });
-
-    server.on('error', (err) => {
-        if (err.code === 'EADDRINUSE') {
-            const nextPort = parseInt(port) + 1;
-            console.log(`Port ${port} is in use, trying ${nextPort}...`);
-            startServer(nextPort);
-        } else {
-            console.error('Server error:', err);
+// Cron job: only run in non-serverless environments (not on Vercel)
+if (!process.env.VERCEL) {
+    cron.schedule("* * * * *", () => {
+        const now = Date.now();
+        if (typeof db !== 'undefined' && db) {
+            db.query("DELETE FROM otp_verification WHERE expiry < ?", [now])
+                .then((result) => {
+                    if (result[0].affectedRows > 0) {
+                        console.log(`Removed ${result[0].affectedRows} expired OTPs from database`);
+                    }
+                })
+                .catch(err => console.error("Cron OTP DB cleanup error:", err.message));
         }
     });
 }
 
-startServer(PORT);
+// Export app for Vercel serverless
+module.exports = app;
+
+// Only start listening when running locally (not on Vercel)
+if (!process.env.VERCEL) {
+    function startServer(port) {
+        const server = app.listen(port, HOST, () => {
+            console.log(`\n🔥 Server running on http://localhost:${port}\n`);
+        });
+
+        server.on('error', (err) => {
+            if (err.code === 'EADDRINUSE') {
+                const nextPort = parseInt(port) + 1;
+                console.log(`Port ${port} is in use, trying ${nextPort}...`);
+                startServer(nextPort);
+            } else {
+                console.error('Server error:', err);
+            }
+        });
+    }
+
+    startServer(PORT);
+}
 
 
