@@ -52,6 +52,14 @@ const dbWrapper = {
             const changesResult = database.exec('SELECT changes() as c');
             const insertId = lastIdResult[0] ? lastIdResult[0].values[0][0] : 0;
             const affectedRows = changesResult[0] ? changesResult[0].values[0][0] : 0;
+            
+            // Save to disk if not on Vercel
+            if (!process.env.VERCEL) {
+                const dbPath = path.join(__dirname, 'database.sqlite');
+                const data = database.export();
+                fs.writeFileSync(dbPath, Buffer.from(data));
+            }
+            
             return [{ insertId, affectedRows }];
         }
     },

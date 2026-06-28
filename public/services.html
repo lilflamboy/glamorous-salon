@@ -389,7 +389,7 @@
                 const response = await fetch('/api/services');
                 if (response.ok) {
                     const data = await response.json();
-                    services = data.map(s => ({...s, img: s.image || s.img}));
+                    services = data.map(s => ({...s, img: s.image || s.img || ''}));
                 } else {
                     throw new Error('Fallback to local');
                 }
@@ -401,7 +401,7 @@
                     { id: 3, name: 'Signature Balayage', price: 4500, category: 'Signature', img: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&fit=crop' },
                     { id: 4, name: 'Bridal Artistry', price: 5000, category: 'Artistry', img: 'https://images.unsplash.com/photo-1457972729786-0411a3b2b626?w=600&fit=crop' },
                     { id: 5, name: 'Organic Head Spa', price: 1800, category: 'Therapy', img: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&fit=crop' },
-                    { id: 6, name: 'Premium Gold Facial', price: 3000, category: 'Signature', img: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc2069?w=600&fit=crop' }
+                    { id: 6, name: 'Premium Gold Facial', price: 3000, category: 'Signature', img: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=600&fit=crop' }
                 ];
             }
             renderServices();
@@ -498,10 +498,10 @@
             const grid = document.getElementById('services-grid');
             grid.innerHTML = services.map(s => `
                 <div class="premium-card ${selectedIds.has(s.id) ? 'selected' : ''}" onclick="toggleService(${s.id})">
-                    <div class="card-img-wrap">
-                        <img src="${s.img}" alt="${s.name}">
+                    ${s.img ? `<div class="card-img-wrap">
+                        <img src="${s.img}" alt="${s.name}" onerror="this.parentElement.style.display='none'">
                         <span class="badge" style="background: rgba(0,0,0,0.5); left: 20px; right: auto;">${s.category}</span>
-                    </div>
+                    </div>` : ''}
                     <div class="card-content">
                         <h3>${s.name}</h3>
                         <p class="card-desc">Elite treatment using our signature techniques.</p>
@@ -524,10 +524,10 @@
             
             grid.innerHTML = filtered.map(c => `
                 <div class="premium-card ${c.category === 'Signature' ? 'best-value' : ''}">
-                    <div class="card-img-wrap">
-                        <img src="${c.img}" alt="${c.name}">
+                    ${c.img ? `<div class="card-img-wrap">
+                        <img src="${c.img}" alt="${c.name}" onerror="this.parentElement.style.display='none'">
                         <span class="badge ${c.category === 'Signature' ? 'gold' : 'pop'}">${c.category}</span>
-                    </div>
+                    </div>` : ''}
                     <div class="card-content">
                         <h3>${c.name}</h3>
                         <p class="card-desc">${c.desc}</p>

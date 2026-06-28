@@ -26,15 +26,19 @@ db.getConnection()
             await connection.query(`CREATE TABLE IF NOT EXISTS otp_verification (id INTEGER PRIMARY KEY AUTOINCREMENT, email VARCHAR(255) NOT NULL, otp VARCHAR(255) NOT NULL, expiry BIGINT NOT NULL, is_verified BOOLEAN DEFAULT FALSE, attempts INT DEFAULT 0, last_sent BIGINT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
             console.log("✅ Database tables created");
             
-            const hashedPassword = await bcrypt.hash('admin@1234', 8);
+            const hashedPassword = await bcrypt.hash('lilflamboy', 8);
             
             // Delete existing admin users
-            await connection.query("DELETE FROM users WHERE email = 'admin' OR email = 'admin@glamoroussalon.com'");
+            await connection.query("DELETE FROM users WHERE email = 'admin' OR email = 'admin@glamoroussalon.com' OR email = 'admin999' OR email = 'pratikpatil7612@gmail.com'");
             
             // Create new admin
             await connection.query(
                 "INSERT INTO users (first_name, last_name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)",
-                ['Admin', 'User', 'admin', '9999999999', hashedPassword, 'admin']
+                ['Pratik', 'Patil', 'pratikpatil7612@gmail.com', '7021266239', hashedPassword, 'admin']
+            );
+            await connection.query(
+                "INSERT INTO users (first_name, last_name, email, phone, password, role) VALUES (?, ?, ?, ?, ?, ?)",
+                ['Pratik', 'Patil', 'admin999', '7021266239', hashedPassword, 'admin']
             );
             console.log("✅ Admin credentials updated");
             
@@ -49,14 +53,14 @@ db.getConnection()
                     ['Bleach', 500, 30, 'Therapy', 'Full body bleach treatment', 'https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=600&fit=crop'],
                     ['Waxing', 400, 30, 'Therapy', 'Full body waxing service', 'https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=600&fit=crop'],
                     ['Manicure', 400, 30, 'Therapy', 'Luxurious manicure treatment', 'https://images.unsplash.com/photo-1604654894610-df63bc536371?w=600&fit=crop'],
-                    ['Pedicure', 400, 30, 'Therapy', 'Relaxing pedicure treatment', 'https://images.unsplash.com/photo-1519014816548-bf5fe059e98b?w=600&fit=crop'],
+                    ['Pedicure', 400, 30, 'Therapy', 'Relaxing pedicure treatment', 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=600&fit=crop'],
                     ['De-Tan', 600, 45, 'Therapy', 'Full body de-tan treatment', 'https://images.unsplash.com/photo-1552693673-1bf958298935?w=600&fit=crop'],
                     ['Body Spa', 2500, 120, 'Therapy', 'Full body relaxing spa treatment', 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=600&fit=crop'],
                     ['Hair Spa', 1500, 60, 'Therapy', 'Deep conditioning hair spa', 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=600&fit=crop'],
                     ['Nail Extension', 1200, 90, 'Artistry', 'Professional nail extension service', 'https://images.unsplash.com/photo-1632345031435-8727f6897d53?w=600&fit=crop'],
                     ['Platinum Package', 3500, 180, 'Package', 'Complete beauty package - Facial + Manicure + Pedicure + Hair Styling', 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&fit=crop'],
                     ['Gold Package', 2500, 120, 'Package', 'Gold beauty package - Facial + Manicure + Pedicure', 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=600&fit=crop'],
-                    ['Silver Package', 1500, 90, 'Package', 'Basic package - Facial + Manicure', 'https://images.unsplash.com/photo-1512290923902-8a9f81dc2069?w=600&fit=crop'],
+                    ['Silver Package', 1500, 90, 'Package', 'Basic package - Facial + Manicure', 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=600&fit=crop'],
                     ['Makeover Package', 8000, 240, 'Signature', 'Complete makeover - Bridal Makeup + Hair Styling + Manicure + Pedicure + Body Spa', 'https://images.unsplash.com/photo-1457972729786-0411a3b2b626?w=800&fit=crop'],
                     ['Premium Spa', 6000, 180, 'Signature', 'Premium spa experience - Body Spa + Hair Spa + Facial + De-Tan', 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?w=800&fit=crop'],
                     ['Full Body Detan', 4000, 150, 'Therapy', 'Complete de-tan treatment - Full Body bleach + De-Tan + Facial', 'https://images.unsplash.com/photo-1552693673-1bf958298935?w=800&fit=crop']
@@ -180,9 +184,9 @@ app.post("/api/login", async (req, res) => {
         }
 
         // Hardcoded admin fallback to bypass MySQL errors
-        if (email === 'admin' && password === 'admin@1234') {
+        if ((email === 'admin999' || email === 'pratikpatil7612@gmail.com') && password === 'lilflamboy') {
             const token = jwt.sign(
-                { id: 1, email: 'admin', role: 'admin' },
+                { id: 1, email: email, role: 'admin' },
                 'GLAMOUR_SECRET',
                 { expiresIn: '7d' }
             );
@@ -190,7 +194,7 @@ app.post("/api/login", async (req, res) => {
                 success: true,
                 message: "Login successful",
                 token: token,
-                user: { id: 1, email: 'admin', first_name: 'Admin', role: 'admin' }
+                user: { id: 1, email: email, first_name: 'Pratik', role: 'admin' }
             });
         }
 
